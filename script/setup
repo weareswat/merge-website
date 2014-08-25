@@ -1,0 +1,16 @@
+#!/bin/bash
+# Setup your environment to run this website
+set -e
+echo "Setting up your environment to run this website..."
+
+# Install CasperJS (dev branch)
+echo "Updating brew..."
+brew update
+echo "Installing casperjs..."
+brew install casperjs --devel
+echo "Upraging casperjs..."
+brew upgrade casperjs
+
+echo ""
+echo "Done."
+echo ""
