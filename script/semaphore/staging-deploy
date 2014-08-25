@@ -20,7 +20,7 @@ echo ""
 cat >> ~/.ssh/config << SSH_CONFIG_EOL
 
 # BEGIN Rupeal Staging
-Host ptws-merge-staging
+Host ptws-staging-merge
 Hostname git.rupeal.pt
 Port 16543
 User mergerup
