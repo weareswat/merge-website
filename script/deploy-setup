@@ -67,6 +67,16 @@ ServerAliveInterval 30
 ServerAliveCountMax 120
 # END Merge Website
 
+# BEGIN Merge Staging
+Host ptws-staging-merge
+Hostname git.rupeal.pt
+Port 16543
+User mergerup
+IdentityFile ~/.ssh/ptws-all/ptws-all-deploy
+ServerAliveInterval 30
+ServerAliveCountMax 120
+# END Merge Staging
+
 PRODUCTION_CONFIG_EOL
       echo "Done. You're ready for pushing some shit live."
     fi
