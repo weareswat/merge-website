@@ -20,10 +20,10 @@ echo ""
 cat >> ~/.ssh/config << SSH_CONFIG_EOL
 
 # BEGIN Rupeal Staging
-Host ptws-merge
+Host ptws-merge-staging
 Hostname git.rupeal.pt
 Port 16543
-User mergelis
+User mergerup
 IdentityFile ~/.ssh/id_rsa
 ServerAliveInterval 30
 ServerAliveCountMax 120
@@ -53,11 +53,11 @@ if git remote -v | grep "staging"; then
   git remote remove staging
 fi
 
-git remote add staging "ixtests@ptws-staging-ix:/home/ixtests/git-ixtests.git"
+git remote add staging "mergerup@ptws-staging-merge:/home/mergerup/git-mergerup.git"
 echo ""
 
 echo "Updating STAGING website..."
-CURR_COMMIT=$(ssh mergelis@ptws-merge "cd ~/git-mergelis.git; git log --pretty=format:'%h' -n 1")
+CURR_COMMIT=$(ssh mergerup@ptws-staging-merge "cd ~/git-mergerup.git; git log --pretty=format:'%h' -n 1")
 echo "Current commit hash is $CURR_COMMIT"
 echo "If you need to rollback, run $(tput bold 1)'script/rollback $CURR_COMMIT'$(tput sgr 0)"
 git push staging staging:master
