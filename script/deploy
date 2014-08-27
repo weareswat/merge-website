@@ -1,0 +1,32 @@
+#!/bin/bash
+# Deployment to production
+set -e
+echo "This will update the live website."
+echo "Type 'ok' to continue (or 'no' to cancel): "
+
+while read VAR_OK; do
+  if [ "$VAR_OK" == "ok" ]
+  then
+    break
+  fi
+  if [ "$VAR_OK" == "no" ]
+  then
+    echo "You've chosen to cancel. Bye."
+    echo ""
+    exit 0
+  fi
+  echo "You must type 'ok' to proceed or 'no' to cancel:"
+done
+
+echo "Updating live website..."
+CURR_COMMIT=$(ssh mergelis@ptws-merge "cd ~/git-mergelis.git; git log --pretty=format:'%h' -n 1")
+echo "Current commit hash is $CURR_COMMIT"
+echo "If you need to rollback, run $(tput bold 1)'script/rollback $CURR_COMMIT'$(tput sgr 0)"
+git push ptws master
+echo ""
+echo "$(tput setaf 2)Done.$(tput sgr 0). Your changes should now be on the live site"
+echo ""
+echo "Current commit hash is $CURR_COMMIT"
+echo "If you need to rollback, run $(tput bold 1)'script/rollback $CURR_COMMIT'$(tput sgr 0)"
+echo "PS: Good boy! You've grown one more chest hair :)"
+echo ""

@@ -1,0 +1,92 @@
+#!/bin/bash
+
+set -e
+echo "Creates the required configs for production deployment"
+
+source "./script/lib/common/bash-common-functions.sh"
+
+echo "This changes your .ssh/config file."
+common_require_ok
+
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+
+HOMEDIR=~
+eval HOMEDIR=$HOMEDIR
+ZIP_FOLDER="${1:-$HOMEDIR/Documents}"
+ZIP_FILE="$ZIP_FOLDER/ptws-all-deploy.zip"
+
+KEY_FOLDER="$HOMEDIR/.ssh/ptws-all"
+
+KEY_FILE="$KEY_FOLDER/ptws-all-deploy"
+
+echo "Looking for key file $KEY_FILE..."
+if [ ! -f $KEY_FILE ]; then
+    echo ""
+    echo "Key file not found. Adding it..."
+    echo ""
+
+    echo "Looking for $ZIP_FILE..."
+    if [ ! -f $ZIP_FILE ]; then
+        echo ""
+        echo "Key zip file not found. Have you read README.md?"
+        echo ""
+        exit 1
+    fi
+    echo "Found $ZIP_FILE. Unzipping..."
+    unzip -o $ZIP_FILE -d $ZIP_FOLDER
+    mkdir $KEY_FOLDER
+    mv $ZIP_FOLDER/ptws-all-deploy $KEY_FOLDER
+else
+  echo "Key file found."
+fi
+
+# Check if .ssh/config exists
+if [ ! -f ~/.ssh/config ]; then
+    echo "SSH Config file not found. Creating one..."
+    touch ~/.ssh/config
+else
+    echo "SSH Config file found. Backing it up to ~/.ssh/config.deploysetup.$TIMESTAMP"
+    cp ~/.ssh/config ~/.ssh/config.deploysetup.$TIMESTAMP
+
+    if grep -q "ptws-merge" ~/.ssh/config; then
+      echo "Found. We're working on a replacement script for this, until then please ask some from Development to create the config section for you."
+      echo "The required config can be seen by opening deploy-setup in a text editor ;)"
+      echo "Gracias!"
+
+    else
+      echo "Not found, adding ptws-merge..."
+      cat >> ~/.ssh/config << PRODUCTION_CONFIG_EOL
+
+# BEGIN Merge Website
+Host ptws-merge
+Hostname git.rupeal.pt
+Port 16543
+User mergelis
+IdentityFile ~/.ssh/ptws-all/ptws-all-deploy
+ServerAliveInterval 30
+ServerAliveCountMax 120
+# END Merge Website
+
+# BEGIN Merge Staging
+Host ptws-staging-merge
+Hostname git.rupeal.pt
+Port 16543
+User mergerup
+IdentityFile ~/.ssh/ptws-all/ptws-all-deploy
+ServerAliveInterval 30
+ServerAliveCountMax 120
+# END Merge Staging
+
+PRODUCTION_CONFIG_EOL
+      echo "Done. You're ready for pushing some shit live."
+    fi
+fi
+
+echo "Configuring git remote..."
+if git remote -v | grep "ptws"; then
+  echo "Found remote ptws. Removing and adding again..."
+  git remote remove ptws
+fi
+
+git remote add ptws "mergelis@ptws-merge:/home/mergelis/git-mergelis.git"
+echo ""

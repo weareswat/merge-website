@@ -1,0 +1,24 @@
+#!/bin/bash
+# Run tests
+set -e
+
+echo "Running frontend tests..."
+echo "Starting php webserver on localhost:8889, waiting 5 seconds for server to start..."
+{ php -S localhost:8889 & } &> /dev/null
+PID=$!
+echo "PHP webserver PID is $PID. If need to kill manually, type 'kill $PID'"
+sleep 5
+echo ""
+echo "Starting casperjs..."
+if casperjs script/casper/brokenlinks.js http://localhost:8889 | grep "error\|HTTP 404"; then #grep "HTTP 404"
+  echo ""
+  echo "ERROR: one or more errors found. Fix them!"
+  echo ""
+  exit 1
+fi
+
+if pgrep php &> /dev/null ; then kill $PID ; fi
+echo ""
+echo "OK. All tests pass. :)"
+echo "Done."
+echo ""

@@ -1,0 +1,66 @@
+#!/bin/bash
+# Deployment to staging
+# Should be used by semaphore
+set -e
+echo "This will update the staging website."
+
+echo ""
+
+HOMEDIR=~
+eval HOMEDIR=$HOMEDIR
+echo "Home dir is $HOMEDIR"
+
+
+echo "Adding ssh to config file..."
+
+echo ""
+cat ~/.ssh/id_rsa
+echo ""
+
+cat >> ~/.ssh/config << SSH_CONFIG_EOL
+
+# BEGIN Rupeal Staging
+Host ptws-staging-merge
+Hostname git.rupeal.pt
+Port 16543
+User mergerup
+IdentityFile ~/.ssh/id_rsa
+ServerAliveInterval 30
+ServerAliveCountMax 120
+# END Rupeal Staging
+
+SSH_CONFIG_EOL
+
+echo ""
+echo "Added. Using key:"
+echo ""
+cat ~/.ssh/config
+
+echo "Adding server public key to known_hosts..."
+cat >> ~/.ssh/known_hosts << SSH_PUB
+[git.rupeal.pt]:16543,[80.172.235.107]:16543 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAoKU1PrW+dnf9uyTipUjnZPVEK/RPQR0FI/qtTSA3IkiCFhtw4WylItH7Da/UbyhKMHV2R0IqwMKT+tfiATUr+tkdPLmpUpBZ2a6hxo/Fqii2+ROkLo7aOooX4U8S0NxQzDTNUC58dpHGEoUXaGVKRPZgPqmCsL6WrvigVsMX+hsPMHI33ZzSwmqnwPKNjXs25EuRriyei9ZQIcVhjPGaWstRx6NAwoMycgOWaOyqoNCJLsSC7AnNWqbeavpw/sy+PV+8vV5PQFN2KI535Juk9haQgaDdM3InS9v1eR0TKcYRq6O930MSY3HCXSU+Cw+pVHPgRDVcMdCMqw73kq41pw==
+SSH_PUB
+echo ""
+
+echo "Done. kwown_hosts is:"
+echo ""
+cat ~/.ssh/known_hosts
+echo ""
+
+echo "Configuring git remote..."
+if git remote -v | grep "staging"; then
+  echo "Found remote staging. Removing and adding again..."
+  git remote remove staging
+fi
+
+git remote add staging "mergerup@ptws-staging-merge:/home/mergerup/git-mergerup.git"
+echo ""
+
+echo "Updating STAGING website..."
+CURR_COMMIT=$(ssh mergerup@ptws-staging-merge "cd ~/git-mergerup.git; git log --pretty=format:'%h' -n 1")
+echo "Current commit hash is $CURR_COMMIT"
+echo "If you need to rollback, run $(tput bold 1)'script/rollback $CURR_COMMIT'$(tput sgr 0)"
+git push staging staging:master
+echo ""
+echo "$(tput setaf 2)Done.$(tput sgr 0). Your changes should now be on the STAGING site"
+echo ""
