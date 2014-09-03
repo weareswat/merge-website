@@ -4,9 +4,18 @@ body {
 	background: url('../img/lisboa.jpg') center center no-repeat;
 	background-size: cover;
 	background-color: #000;
+	
 }
 
-.main-container{
+img.last {
+	left: 0px;
+	top: 0px;
+	position: absolute;
+	width: 10%;
+}
+
+
+.main-container {
 	position: relative;
 	z-index: 999;
 }
@@ -91,6 +100,9 @@ a.merge {
 		margin-top: -2%;
 	}
 
+	img.last {
+		width: 15%;
+}
 	h2.location {
 		margin-right: 25%;
 		margin-left: 25%;
@@ -111,6 +123,10 @@ a.merge {
 		width: 30%;
 		margin-top: 5%;
 	}
+
+	img.last {
+		width: 20%;
+}
 
 	body {
 		min-height: 1080px;
@@ -137,6 +153,11 @@ a.merge {
 	img.logo {
 		width: 25%;
 	}
+
+	img.last {
+	
+		width: 25%;
+}
 
 	h2.location {
 		margin-right: 14%;
@@ -168,6 +189,10 @@ a.merge {
 	img.logo {
 		width: 35%;
 	}
+
+	img.last {
+		width: 35%;
+}
 
 	p.tagline {
 	font-size: 12px;
