@@ -178,8 +178,8 @@ nav a:hover {
    ========================================================================== */
 
 @media only screen and (min-width: 480px) {
-    
-    
+
+
 }
 /* ====================
     INTERMEDIATE: Menu
@@ -397,3 +397,11 @@ nav a:hover {
         page-break-after: avoid;
     }
 }*/
+
+a.videolink {
+  color: #E8455B;
+  text-decoration: none;
+}
+a.videolink:hover {
+  text-decoration: underline;
+}
